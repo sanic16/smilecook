@@ -16,6 +16,10 @@ class User(db.Model):
     recipes = db.relationship('Recipe', backref='user')
 
     @classmethod
+    def get_by_id(cls, id):
+        return cls.query.filter_by(id=id).first()
+
+    @classmethod
     def get_by_username(cls, username):
         return cls.query.filter_by(username=username).first()
 
