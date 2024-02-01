@@ -33,7 +33,7 @@ class Config:
     JWT_REFRESH_COOKIE_NAME = 'refresh_token'
     JWT_COOKIE_SECURE = False
     JWT_COOKIE_SAMESITE = 'None'
-    JWT_COOKIE_CSRF_PROTECT = True
+    JWT_COOKIE_CSRF_PROTECT = False
     JWT_TOKEN_LOCATION = ['headers', 'cookies']
 
     SECRET_KEY = 'top-secret'
