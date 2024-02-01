@@ -10,14 +10,7 @@ mysql_db = {
     'port': 3306,
 }
 
-SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://{}:{}@{}:{}/{}'.format(
-    mysql_db['user'],
-    mysql_db['password'],
-    mysql_db['host'],
-    mysql_db['port'],
-    'hmlhi3b4fnfpqx4o'
-)
-
+print(mysql_db)
 
 class Config:
     DEBUG = True
@@ -26,7 +19,7 @@ class Config:
         mysql_db['password'],
         mysql_db['host'],
         mysql_db['port'],
-        'hmlhi3b4fnfpqx4o'
+        'hg8ixodvba070fq0'
     )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SECRET_KEY = '90e009fbad02c5d8c5db22a3ba55fb3deb870cb40bc54c1efaa8ecece67929700c3c06246e13e26835f55a5ee3fab16992222cc49df777eeb79f5e3019f2cd70'
