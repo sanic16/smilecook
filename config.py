@@ -34,3 +34,13 @@ class Config:
     JWT_ACCESS_TOKEN_EXPIRES = 3600
     JWT_BLACKLIST_ENABLED = True
     JWT_BLACKLIST_TOKEN_CHECKS = ['access', 'refresh']
+
+    SECRET_KEY = 'top-secret'
+    MAIL_SERVER = 'smtp.sendgrid.net'
+    MAIL_PORT = 587
+    MAIL_USE_TLS = True
+    MAIL_USERNAME = 'apikey'
+    MAIL_PASSWORD = os.environ.get('SENDGRID_API_KEY')
+    MAIL_DEFAULT_SENDER = os.environ.get('MAIL_DEFAULT_SENDER')
+
+    UPLOADED_IMAGES_DEST = 'client/assets/images'

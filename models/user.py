@@ -14,6 +14,7 @@ class User(db.Model):
     updated_at = db.Column(db.DateTime(), nullable=False,
                            server_default=db.func.now(), onupdate=db.func.now())
     recipes = db.relationship('Recipe', backref='user')
+    avatar_image = db.Column(db.String(100), default=None)
 
     @classmethod
     def get_by_id(cls, id):
