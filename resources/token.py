@@ -45,8 +45,9 @@ class RefreshResource(Resource):
         current_user = get_jwt_identity()
         access_token = create_access_token(identity=current_user, fresh=False)
 
-        
-        response = make_response({}, HTTPStatus.OK)
+        user = User.get_by_id(id=current_user)
+        user = user_schema.dump(user)
+        response = make_response(user, HTTPStatus.OK)
         response.set_cookie('access_token', access_token, httponly=True, samesite='None', secure=False)
         return response
     
