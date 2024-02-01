@@ -112,6 +112,7 @@ class UserRecipeListResource(Resource):
             visibility = 'public'
         
         recipes = Recipe.get_all_by_user(user_id=user.id, visibility=visibility)
+        print(recipes)
 
         return recipe_list_schema.dump(recipes), HTTPStatus.OK
     

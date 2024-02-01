@@ -44,7 +44,11 @@ class RefreshResource(Resource):
     def post(self):
         current_user = get_jwt_identity()
         access_token = create_access_token(identity=current_user, fresh=False)
-        return {"access_token": access_token}, HTTPStatus.OK
+
+        
+        response = make_response({}, HTTPStatus.OK)
+        response.set_cookie('access_token', access_token, httponly=True, samesite='None', secure=False)
+        return response
     
 
 class RevokeResource(Resource):
