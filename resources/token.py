@@ -1,5 +1,5 @@
 from http import HTTPStatus
-from flask import request
+from flask import request, make_response
 from flask_restful import Resource
 from flask_jwt_extended import (create_access_token, create_refresh_token,
                                 jwt_required, get_jwt_identity, get_jwt)
@@ -9,6 +9,9 @@ from datetime import datetime
 from datetime import timezone
 from models.token import TokenBlocklist
 from extensions import db
+from schemas.user import UserSchema
+
+user_schema = UserSchema()
 
 black_list = set()
 
@@ -29,11 +32,13 @@ class TokenResource(Resource):
 
         refresh_token = create_refresh_token(identity=user.id)
 
-        return {
-            'access_token': access_token,
-            'refresh_token': refresh_token
-        }, HTTPStatus.OK
+        user = user_schema.dump(user)
 
+        response = make_response(user, HTTPStatus.OK)
+        response.set_cookie('refresh_token', refresh_token, httponly=True, samesite='None', secure=False)
+        response.set_cookie('access_token', access_token, httponly=True, samesite='None', secure=False)
+        return response
+    
 class RefreshResource(Resource):
     @jwt_required(refresh=True)
     def post(self):
