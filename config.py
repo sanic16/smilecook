@@ -10,7 +10,7 @@ mysql_db = {
     'port': 3306,
 }
 
-print(mysql_db)
+print(os.getenv('MAIL_DEFAULT_SENDER'))
 
 class Config:
     DEBUG = True
