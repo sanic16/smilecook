@@ -178,6 +178,7 @@ class UserAvatarUploadResource(Resource):
             return {'message': 'File type not allowed'}, HTTPStatus.BAD_REQUEST
         
         user = User.get_by_id(id=get_jwt_identity())
+        print('step 1')
 
         if user.avatar_image:
             # user.avatar_image format: https://{bucket_name}.s3.amazonaws.com/{object_key}
@@ -185,9 +186,11 @@ class UserAvatarUploadResource(Resource):
             delete_from_s3(object_key=object_key)
             filename = upload_to_s3(file)
             user.avatar_image = get_object_url(bucket_name='flask-react-gt-aws-bucket', object_key=filename)
+            print('step 2')
         else:
             filename = upload_to_s3(file)
             user.avatar_image = get_object_url(bucket_name='flask-react-gt-aws-bucket', object_key=filename)
+            print('step 2')
 
         user.save()
 
