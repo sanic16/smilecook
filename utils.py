@@ -47,7 +47,7 @@ def upload_to_s3(file):
     AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
     AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
     AWS_REGION = 'us-east-1'
-    print('step 3')
+
     client = boto3.client(
         's3',
         aws_access_key_id = AWS_ACCESS_KEY_ID,
@@ -57,13 +57,10 @@ def upload_to_s3(file):
     filename = '{}.{}'.format(uuid.uuid4(), file.filename.split('.')[-1])
     print(filename)
 
-    print('step 4')
-
     try:
         file.seek(0)
         file_binary = file.read()
         client.put_object(Bucket=BUCKET_NAME, Key=filename, Body=file_binary)
-        print('step 5')
     except Exception as e:
         return False
     
