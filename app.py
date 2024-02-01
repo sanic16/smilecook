@@ -9,7 +9,7 @@ from resources.user import (UserListResource, UserResource, MeResource, UserReci
                              UserActivateResource, UserAvatarUploadResource) 
 from resources.token import TokenResource, RefreshResource, RevokeResource, black_list 
 from models.token import TokenBlocklist
-from flask_uploads import configure_uploads
+from flask_reuploads import configure_uploads
 
 
 def create_app():
