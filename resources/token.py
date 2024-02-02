@@ -5,7 +5,7 @@ from flask_jwt_extended import (create_access_token, create_refresh_token,
                                 jwt_required, get_jwt_identity, get_jwt)
 from utils import check_password
 from models.user import User
-from datetime import datetime
+from datetime import datetime, timedelta
 from datetime import timezone
 from models.token import TokenBlocklist
 from extensions import db
@@ -34,9 +34,12 @@ class TokenResource(Resource):
 
         user = user_schema.dump(user)
 
+        expire_date = datetime.now()
+        expire_date = expire_date + timedelta(days=14)
+
         response = make_response(user, HTTPStatus.OK)
-        response.set_cookie('refresh_token', refresh_token, httponly=True, samesite='None', secure=False)
-        response.set_cookie('access_token', access_token, httponly=True, samesite='None', secure=False)
+        response.set_cookie('refresh_token', refresh_token, httponly=True, secure=True, expires=expire_date, samesite='Lax')
+        response.set_cookie('jwt', access_token, httponly=True,  secure=True, expires=expire_date, samesite='Lax')
         return response
     
 class RefreshResource(Resource):

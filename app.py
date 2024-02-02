@@ -28,6 +28,7 @@ def register_extensions(app):
     configure_uploads(app, image_set)
     cors.init_app(app)
     
+    
     # patch_request_class(app, 5*1024*1024)
 
     @jwt.token_in_blocklist_loader
