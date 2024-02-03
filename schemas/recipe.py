@@ -25,6 +25,7 @@ class RecipeSchema(Schema):
                            )
     created_at = fields.DateTime(dump_only=True)
     updated_at = fields.DateTime(dump_only=True)
+    cover_image = fields.Method(serialize='dump_recipe_image')
 
     @validates('cook_time')
     def validate_cook_time(self, value):
@@ -40,3 +41,8 @@ class RecipeSchema(Schema):
         return data
 
     
+    def dump_recipe_image(self, recipe):
+        if recipe.cover_image:
+            return recipe.cover_image
+        else:
+            return 'https://flask-react-gt-aws-bucket.s3.amazonaws.com/uploads_recipe/assets/no-image.jpg'

@@ -1,38 +1,5 @@
 from extensions import db
 
-# recipe_list = []
-
-
-# def get_last_id():
-#     if recipe_list:
-#         last_recipe = recipe_list[-1]
-#     else:
-#         return 1
-
-#     return last_recipe.id + 1
-
-
-# class Recipe:
-#     def __init__(self, name, description, num_of_servings, cook_time, directions):
-#         self.id = get_last_id()
-#         self.name = name
-#         self.description = description
-#         self.num_of_servings = num_of_servings
-#         self.cook_time = cook_time
-#         self.directions = directions
-#         self.is_publish = False
-
-#     @property
-#     def data(self):
-#         return {
-#             'id': self.id,
-#             'name': self.name,
-#             'description': self.description,
-#             'num_of_servings': self.num_of_servings,
-#             'cook_time': self.cook_time,
-#             'directions': self.directions
-#         }
-
 class Recipe(db.Model):
     __tablename__ = 'recipe'
     id = db.Column(db.Integer, primary_key=True)
@@ -48,18 +15,8 @@ class Recipe(db.Model):
                            server_default=db.func.now(), onupdate=db.func.now())
 
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-
-    # def data(self):
-    #     return {
-    #         'id': self.id,
-    #         'name': self.name,
-    #         'description': self.description,
-    #         'num_of_servings': self.num_of_servings,
-    #         'cook_time': self.cook_time,
-    #         'directions': self.cook_time,
-    #         'user_id': self.user_id
-    #     }
-    
+    cover_image = db.Column(db.String(150), default=None)
+        
     @classmethod
     def get_all_published(cls):
         return cls.query.filter_by(is_publish=True).all()
