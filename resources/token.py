@@ -3,13 +3,23 @@ from flask import request, make_response
 from flask_restful import Resource
 from flask_jwt_extended import (create_access_token, create_refresh_token,
                                 jwt_required, get_jwt_identity, get_jwt)
-from utils import check_password
+
 from models.user import User
+from models.token import TokenBlocklist
+
+from schemas.user import UserSchema
+
+from utils import check_password
+
 from datetime import datetime, timedelta
 from datetime import timezone
-from models.token import TokenBlocklist
+
 from extensions import db
-from schemas.user import UserSchema
+
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 user_schema = UserSchema()
 
@@ -37,9 +47,11 @@ class TokenResource(Resource):
         expire_date = datetime.now()
         expire_date = expire_date + timedelta(days=14)
 
+        secure = os.getenv('ENVIRONMENT') == 'production'
+
         response = make_response(user, HTTPStatus.OK)
-        response.set_cookie('refresh_token', refresh_token, httponly=True, secure=True, expires=expire_date, samesite='Lax')
-        response.set_cookie('jwt', access_token, httponly=True,  secure=True, expires=expire_date, samesite='Lax')
+        response.set_cookie('refresh_token', refresh_token, httponly=True, samesite='Strict', secure=secure, expires=expire_date)
+        response.set_cookie('access_token', access_token, httponly=True, samesite='Strict', secure=secure, expires=expire_date)
         return response
     
 class RefreshResource(Resource):
@@ -50,8 +62,14 @@ class RefreshResource(Resource):
 
         user = User.get_by_id(id=current_user)
         user = user_schema.dump(user)
+
+        expire_date = datetime.now()
+        expire_date = expire_date + timedelta(days=14)
+
+        secure = os.getenv('ENVIRONMENT') == 'production'
+
         response = make_response(user, HTTPStatus.OK)
-        response.set_cookie('access_token', access_token, httponly=True, samesite='None', secure=False)
+        response.set_cookie('access_token', access_token, httponly=True, samesite='None', secure=secure, expires=expire_date)
         return response
     
 

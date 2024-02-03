@@ -1,7 +1,7 @@
 from flask import request, url_for, redirect
 from flask_restful import Resource
 from http import HTTPStatus
-from utils import generate_token, verify_token, get_object_url, upload_to_s3, delete_from_s3
+from utils import generate_token, verify_token, generate_presigned_url, get_object_url
 from flask_jwt_extended import get_jwt_identity, jwt_required
 from marshmallow import ValidationError
 
@@ -169,29 +169,39 @@ class UserActivateResource(Resource):
 class UserAvatarUploadResource(Resource):
     @jwt_required()
     def put(self):
-        file = request.files.get('avatar')
-        if not file:
-            return {'message': 'Not a valid image'}, HTTPStatus.BAD_REQUEST
-        
-        if not image_set.file_allowed(file, file.filename):
-            return {'message': 'File type not allowed'}, HTTPStatus.BAD_REQUEST
         
         user = User.get_by_id(id=get_jwt_identity())
 
         if user.avatar_image:
-            # user.avatar_image format: https://{bucket_name}.s3.amazonaws.com/{object_key}
-            object_key = user.avatar_image.split('/')[-1]
-            delete_from_s3(object_key=object_key)
-            filename = upload_to_s3(file)
-            user.avatar_image = get_object_url(bucket_name='flask-react-gt-aws-bucket', object_key=filename)
+            print(user.avatar_image)
+            # user.avatar_image format: https://{bucket_name}.s3.amazonaws.com/uploads_avatar/{object_key}
+            # return uplodas_avatar/{object_key}
+            object_key_index = user.avatar_image.find('uploads_avatar')
+            object_key = user.avatar_image[object_key_index:]
+            print(object_key)
+            res = generate_presigned_url(operation='delete_and_upload', object_key=object_key)
+            if not res:
+                return {'message': 'Error occurred while uploading image'}, HTTPStatus.INTERNAL_SERVER_ERROR
+            
+            object_key, presigned_url = res
+            
+            image = get_object_url(bucket_name='flask-react-gt-aws-bucket', object_key=object_key)
+            print(image)
+            user.avatar_image = image 
         else:
-            filename = upload_to_s3(file)
-            user.avatar_image = get_object_url(bucket_name='flask-react-gt-aws-bucket', object_key=filename)
+            print('no avatar image')
+            res = generate_presigned_url(operation='upload')
+            if not res:
+                return {'message': 'Error occurred while uploading image'}, HTTPStatus.INTERNAL_SERVER_ERROR
+           
+            object_key, presigned_url = res
+
+            user.avatar_image = get_object_url(bucket_name='flask-react-gt-aws-bucket', object_key=object_key) 
 
         user.save()
+        
 
-        return user_avatar_schema.dump(user), HTTPStatus.OK
-
+        return {'presigned_url': presigned_url}, HTTPStatus.OK
        
             
 
