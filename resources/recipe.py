@@ -6,6 +6,7 @@ from flask_jwt_extended import get_jwt_identity, jwt_required
 from decorators import admin_required
 from schemas.recipe import RecipeSchema
 from marshmallow import ValidationError
+from utils import generate_presigned_url, get_object_url
 
 recipe_schema = RecipeSchema()
 
@@ -135,3 +136,45 @@ class RecipePublishResource(Resource):
         recipe.save()
 
         return {}, HTTPStatus.NO_CONTENT
+
+class RecipeCoverUploadResource(Resource):
+    @jwt_required()
+    def put(self, recipe_id):
+        
+        recipe = Recipe.get_by_id(recipe_id=recipe_id)
+
+        if recipe is None:
+            return {'message': 'Recipe not found'}, HTTPStatus.NOT_FOUND
+        
+        current_user = get_jwt_identity()
+
+        if current_user != recipe.user_id:
+            return {'message': 'Access is not allowed'}, HTTPStatus.FORBIDDEN
+        
+        if recipe.cover_image:
+            # recipe.cover_image format: https://{bucket_name}.s3.amazonaws.com/uploads_cover_image/{object_key}
+            # return uploads_cover_image/{object_key} to the client
+            object_key_index = recipe.cover_image.find('uploads_cover_image')
+            object_key = recipe.cover_image[object_key_index:]
+            res = generate_presigned_url(operation='delete_and_upload', object_key=object_key)
+
+            if not res:
+                return {'message': 'Error occurred while uploading image'}, HTTPStatus.INTERNAL_SERVER_ERROR
+            
+            object_key, presigned_url = res
+
+            image = get_object_url(bucket_name='flask-react-gt-aws-bucket', object_key=object_key)
+            recipe.cover_image = image
+
+        else:
+            res = generate_presigned_url(operation='upload')
+            if not res:
+                return {'message': 'Error occurred while uploading image'}, HTTPStatus.INTERNAL_SERVER_ERROR
+            
+            object_key, presigned_url = res
+
+            recipe.cover_image = get_object_url(bucket_name='flask-react-gt-aws-bucket', object_key=object_key)
+
+        recipe.save()
+
+        return {'presigned_url': presigned_url}, HTTPStatus.OK

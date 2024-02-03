@@ -4,7 +4,7 @@ from flask_restful import Api
 from config import Config
 from extensions import db, jwt, mail, cors
 
-from resources.recipe import RecipeListResource, RecipeResource, RecipePublishResource
+from resources.recipe import RecipeListResource, RecipeResource, RecipePublishResource, RecipeCoverUploadResource
 from resources.user import (UserListResource, UserResource, MeResource, UserRecipeListResource,
                              UserActivateResource, UserAvatarUploadResource) 
 from resources.token import TokenResource, RefreshResource, RevokeResource, black_list 
@@ -41,6 +41,7 @@ def register_resources(app):
     api.add_resource(RecipeListResource, '/api/recipes')
     api.add_resource(RecipeResource, '/api/recipes/<int:recipe_id>')
     api.add_resource(RecipePublishResource, '/api/recipes/<int:recipe_id>/publish')
+    api.add_resource(RecipeCoverUploadResource, '/api/recipes/<int:recipe_id>/cover')
 
     api.add_resource(UserListResource, '/api/users')
     api.add_resource(UserResource, '/api/users/<string:username>')
