@@ -10,7 +10,6 @@ mysql_db = {
     'port': 3306,
 }
 
-print(os.getenv('MAIL_DEFAULT_SENDER'))
 
 class Config:
     DEBUG = True
@@ -44,4 +43,4 @@ class Config:
     MAIL_PASSWORD = os.environ.get('SENDGRID_API_KEY')
     MAIL_DEFAULT_SENDER = os.environ.get('MAIL_DEFAULT_SENDER')
 
-    UPLOADED_IMAGES_DEST = 'client/assets/images'
+    # UPLOADED_IMAGES_DEST = 'client/assets/images'

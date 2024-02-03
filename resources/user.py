@@ -16,7 +16,6 @@ from schemas.recipe import RecipeSchema
 
 from emails import send_email
 
-from extensions import image_set
 
 
 
@@ -35,7 +34,6 @@ class UserListResource(Resource):
     def post(self):
         json_data = request.get_json()
         
-        # validate and deserialize input
         try:
             data = user_schema.load(data=json_data)
         except ValidationError as err:
@@ -141,29 +139,6 @@ class UserActivateResource(Resource):
         return redirect('/')
 
 
-# class UserAvatarUploadResource(Resource):
-#     @jwt_required()
-#     def put(self):
-#         file = request.files.get('avatar')
-#         if not file:
-#             return {'message': 'Not a valid image'}, HTTPStatus.BAD_REQUEST
-        
-#         if not image_set.file_allowed(file, file.filename):
-#             return {'message': 'File type not allowed'}, HTTPStatus.BAD_REQUEST
-        
-#         user = User.get_by_id(id=get_jwt_identity())
-
-#         if user.avatar_image:
-#             avatar_path = image_set.path(folder='avatars', filename=user.avatar_image)
-#             if os.path.exists(avatar_path):
-#                 os.remove(avatar_path)
-
-#         filename = save_image(image=file, folder='avatars')
-#         user.avatar_image = filename
-
-#         user.save()
-
-#         return user_avatar_schema.dump(user), HTTPStatus.OK
 
 
 class UserAvatarUploadResource(Resource):
@@ -173,12 +148,10 @@ class UserAvatarUploadResource(Resource):
         user = User.get_by_id(id=get_jwt_identity())
 
         if user.avatar_image:
-            print(user.avatar_image)
             # user.avatar_image format: https://{bucket_name}.s3.amazonaws.com/uploads_avatar/{object_key}
             # return uplodas_avatar/{object_key}
             object_key_index = user.avatar_image.find('uploads_avatar')
             object_key = user.avatar_image[object_key_index:]
-            print(object_key)
             res = generate_presigned_url(operation='delete_and_upload', object_key=object_key)
             if not res:
                 return {'message': 'Error occurred while uploading image'}, HTTPStatus.INTERNAL_SERVER_ERROR
@@ -186,10 +159,8 @@ class UserAvatarUploadResource(Resource):
             object_key, presigned_url = res
             
             image = get_object_url(bucket_name='flask-react-gt-aws-bucket', object_key=object_key)
-            print(image)
             user.avatar_image = image 
         else:
-            print('no avatar image')
             res = generate_presigned_url(operation='upload')
             if not res:
                 return {'message': 'Error occurred while uploading image'}, HTTPStatus.INTERNAL_SERVER_ERROR

@@ -24,4 +24,7 @@ class UserSchema(Schema):
         #     return url_for('static', filename='images/avatars/{}'.format(user.avatar_image), _external=True)
         # else:
         #     return url_for('static', filename='images/assets/default-avatar.jpg', _external=True)
-        return user.avatar_image 
+        if user.avatar_image:
+            return user.avatar_image
+        else:
+            return 'https://flask-react-gt-aws-bucket.s3.amazonaws.com/uploads_avatar/assets/no-image.jpg'

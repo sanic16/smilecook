@@ -2,14 +2,13 @@ from flask import Flask, send_from_directory
 from flask_migrate import Migrate
 from flask_restful import Api
 from config import Config
-from extensions import db, jwt, mail, image_set, cors
+from extensions import db, jwt, mail, cors
 
 from resources.recipe import RecipeListResource, RecipeResource, RecipePublishResource
 from resources.user import (UserListResource, UserResource, MeResource, UserRecipeListResource,
                              UserActivateResource, UserAvatarUploadResource) 
 from resources.token import TokenResource, RefreshResource, RevokeResource, black_list 
 from models.token import TokenBlocklist
-from flask_reuploads import configure_uploads
 
 
 def create_app():
@@ -25,11 +24,9 @@ def register_extensions(app):
     migrate = Migrate(app, db)
     jwt.init_app(app=app)
     mail.init_app(app=app)
-    configure_uploads(app, image_set)
     cors.init_app(app)
     
     
-    # patch_request_class(app, 5*1024*1024)
 
     @jwt.token_in_blocklist_loader
     def check_if_token_in_blacklist(jwt_header, jwt_payload: dict) -> bool:
