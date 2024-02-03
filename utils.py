@@ -31,7 +31,7 @@ def verify_token(token, max_age=1800, salt=None):
         return False
     return email
 
-def generate_presigned_url(operation, object_key=None, expiration=30, ):
+def generate_presigned_url(operation, object_key=None, expiration=30, resource='user'):
     s3_client = boto3.client(
         's3',
         aws_access_key_id=os.environ.get('AWS_ACCESS_KEY_ID'),
@@ -49,7 +49,10 @@ def generate_presigned_url(operation, object_key=None, expiration=30, ):
            
             return False
         
-    new_object_key = f'uploads_avatar/{uuid.uuid4()}.jpeg' 
+    if resource == 'user':
+        new_object_key = f'uploads_avatar/{uuid.uuid4()}.jpeg' 
+    elif resource == 'recipe':
+        new_object_key = f'uploads_cover_image/{uuid.uuid4()}.jpeg'
 
 
     try:

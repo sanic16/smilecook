@@ -1,5 +1,6 @@
 from marshmallow import Schema, fields, post_dump, validate, validates, ValidationError
 from schemas.user import UserSchema
+from schemas.pagination import PaginationSchema
 
 def validate_num_of_servings(n):
     if n < 1:
@@ -34,11 +35,11 @@ class RecipeSchema(Schema):
         if value > 300:
             raise ValidationError('Cook time must not be greater than 300.')
 
-    @post_dump(pass_many=True)
-    def wrap(self, data, many, **kwargs):
-        if many:
-            return {'data': data}
-        return data
+    # @post_dump(pass_many=True)
+    # def wrap(self, data, many, **kwargs):
+    #     if many:
+    #         return {'data': data}
+    #     return data
 
     
     def dump_recipe_image(self, recipe):
@@ -46,3 +47,7 @@ class RecipeSchema(Schema):
             return recipe.cover_image
         else:
             return 'https://flask-react-gt-aws-bucket.s3.amazonaws.com/uploads_recipe/assets/no-image.jpg'
+        
+class RecipePaginationSchema(PaginationSchema):
+    data = fields.Nested(RecipeSchema, attribute='items', many=True)
+    

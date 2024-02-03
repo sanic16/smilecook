@@ -4,18 +4,33 @@ from http import HTTPStatus
 from models.recipe import Recipe
 from flask_jwt_extended import get_jwt_identity, jwt_required
 from decorators import admin_required
-from schemas.recipe import RecipeSchema
+from schemas.recipe import RecipeSchema, RecipePaginationSchema
 from marshmallow import ValidationError
 from utils import generate_presigned_url, get_object_url
+from webargs.flaskparser import use_args
+from webargs import fields, validate 
 
 recipe_schema = RecipeSchema()
 
 recipe_list_schema = RecipeSchema(many=True)
 
+recipe_pagination_schema = RecipePaginationSchema()
+
 class RecipeListResource(Resource):
-    def get(self):
-        recipes = Recipe.get_all_published()
-        return recipe_list_schema.dump(recipes), HTTPStatus.OK    
+    # def get(self):
+    #     recipes = Recipe.get_all_published()
+    #     return recipe_list_schema.dump(recipes), HTTPStatus.OK    
+    @use_args({
+        'page': fields.Integer(missing=1),
+        'per_page': fields.Integer(missing=5),
+    })
+    def get(self, args):
+        page = args.get('page')
+        per_page = args.get('per_page')
+
+        paginated_recipes = Recipe.get_all_published(page=page, per_page=per_page)
+
+        return recipe_pagination_schema.dump(paginated_recipes), HTTPStatus.OK
 
 
     @jwt_required()
@@ -156,7 +171,7 @@ class RecipeCoverUploadResource(Resource):
             # return uploads_cover_image/{object_key} to the client
             object_key_index = recipe.cover_image.find('uploads_cover_image')
             object_key = recipe.cover_image[object_key_index:]
-            res = generate_presigned_url(operation='delete_and_upload', object_key=object_key)
+            res = generate_presigned_url(operation='delete_and_upload', object_key=object_key, resource='recipe')
 
             if not res:
                 return {'message': 'Error occurred while uploading image'}, HTTPStatus.INTERNAL_SERVER_ERROR
@@ -167,7 +182,7 @@ class RecipeCoverUploadResource(Resource):
             recipe.cover_image = image
 
         else:
-            res = generate_presigned_url(operation='upload')
+            res = generate_presigned_url(operation='upload', resource='recipe')
             if not res:
                 return {'message': 'Error occurred while uploading image'}, HTTPStatus.INTERNAL_SERVER_ERROR
             
