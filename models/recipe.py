@@ -21,8 +21,8 @@ class Recipe(db.Model):
     @classmethod
     def get_all_published(cls, page, per_page=10 ):
         # return cls.query.filter_by(is_publish=True).all()
-        return cls.query.filter_by(is_publish=True).order_by(desc(cls.created_at)).paginate(page=page, per_page=per_page, error_out=False)
-    
+        return cls.query.filter_by(is_publish=True).order_by(desc(cls.created_at)).paginate(page=page, per_page=per_page)
+
 
     
     @classmethod

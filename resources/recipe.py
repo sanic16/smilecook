@@ -23,13 +23,15 @@ class RecipeListResource(Resource):
     @use_args({
         'page': fields.Integer(missing=1),
         'per_page': fields.Integer(missing=5),
-    })
+    },
+    location='query'
+    )
     def get(self, args):
         page = args.get('page')
         per_page = args.get('per_page')
 
         paginated_recipes = Recipe.get_all_published(page=page, per_page=per_page)
-
+      
         return recipe_pagination_schema.dump(paginated_recipes), HTTPStatus.OK
 
 
