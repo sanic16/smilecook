@@ -23,7 +23,6 @@ load_dotenv()
 
 user_schema = UserSchema()
 
-black_list = set()
 
 class TokenResource(Resource):
     def post(self):

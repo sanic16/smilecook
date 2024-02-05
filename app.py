@@ -7,7 +7,7 @@ from extensions import db, jwt, mail, cors
 from resources.recipe import RecipeListResource, RecipeResource, RecipePublishResource, RecipeCoverUploadResource
 from resources.user import (UserListResource, UserResource, MeResource, UserRecipeListResource,
                              UserActivateResource, UserAvatarUploadResource) 
-from resources.token import TokenResource, RefreshResource, RevokeResource, black_list 
+from resources.token import TokenResource, RefreshResource, RevokeResource, TokenMobileResource, RefreshMobileResource  
 from models.token import TokenBlocklist
 
 
@@ -53,6 +53,8 @@ def register_resources(app):
     api.add_resource(TokenResource, '/api/token')
     api.add_resource(RefreshResource, '/api/refresh')
     api.add_resource(RevokeResource, '/api/revoke')
+    api.add_resource(TokenMobileResource, '/api/mobile/token')
+    api.add_resource(RefreshMobileResource, '/api/mobile/refresh')
 
 app = create_app()
 
