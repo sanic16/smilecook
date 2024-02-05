@@ -83,3 +83,38 @@ class RevokeResource(Resource):
 
         return {'message': 'Successfully logged out'}, HTTPStatus.OK
     
+class TokenMobileResource(Resource):
+    def post(self):
+        json_data = request.get_json()
+        email = json_data.get('email')
+        password = json_data.get('password')
+
+        user = User.get_by_email(email=email)
+
+        if not user or not check_password(password, user.password):
+            return {'message': 'email or password is incorrect'}, HTTPStatus.UNAUTHORIZED
+        
+        if user.is_active is False:
+            return {'message': 'The user account is not activated yet'}, HTTPStatus.UNAUTHORIZED
+        
+        access_token = create_access_token(identity=user.id, fresh=True)
+        refresh_token = create_refresh_token(identity=user.id)
+
+        return {
+            'user': user_schema.dump(user),
+            'access_token': access_token,
+            'refresh_token': refresh_token
+        }, HTTPStatus.OK        
+
+class RefreshMobileResource(Resource):
+    @jwt_required(refresh=True)
+    def post(self):
+        current_user = get_jwt_identity()
+        access_token = create_access_token(identity=current_user, fresh=False)
+
+        user = User.get_by_id(id=current_user)
+        
+        return {
+            'user': user_schema.dump(user),
+            'access_token': access_token
+        }
