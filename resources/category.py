@@ -59,3 +59,22 @@ class CategoryResource(Resource):
         category.delete()
 
         return {}, HTTPStatus.NO_CONTENT
+    
+    @jwt_required()
+    @admin_required
+    def put(self, category_id):
+        json_data = request.get_json()
+        
+
+        category = Category.get_by_id(category_id=category_id)
+
+        if category is None:
+            return {'message': 'Category not found'}, HTTPStatus.NOT_FOUND
+        
+        category.name = json_data.get('name')
+        category.save()
+
+        return {
+            'id': category.id,
+            'name': category.name
+        }, HTTPStatus.OK
