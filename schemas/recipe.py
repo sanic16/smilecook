@@ -1,7 +1,6 @@
 from marshmallow import Schema, fields, post_dump, validate, validates, ValidationError
 from schemas.user import UserSchema
 from schemas.pagination import PaginationSchema
-from schemas.category import CategorySchema
 
 def validate_num_of_servings(n):
     if n < 1:
@@ -27,7 +26,6 @@ class RecipeSchema(Schema):
                            )
     created_at = fields.DateTime(dump_only=True)
     updated_at = fields.DateTime(dump_only=True)
-    category = fields.Nested(CategorySchema, dump_only=True, only=('id', 'name'))
     cover_image = fields.Method(serialize='dump_recipe_image')
 
     @validates('cook_time')
