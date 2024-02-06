@@ -4,20 +4,17 @@ from http import HTTPStatus
 from models.recipe import Category
 from flask_jwt_extended import get_jwt_identity, jwt_required
 from decorators import admin_required
+from schemas.category import CategorySchema
+from marshmallow import ValidationError
+
+category_schema = CategorySchema()
+category_list_schema = CategorySchema(many=True)
 
 class CategoryListResource(Resource):
     def get(self):
         categories = Category.get_all_categories()
-        data = []
-        for category in categories:
-            data.append({
-                'id': category.id,
-                'name': category.name
-            })
-
-        return {
-            'categories': data
-        }, HTTPStatus.OK
+        
+        return category_list_schema.dump(categories), HTTPStatus.OK
 
 
 
@@ -25,15 +22,19 @@ class CategoryListResource(Resource):
     @admin_required
     def post(self):
         json_data = request.get_json()
-        category = json_data.get('category')
         
-        category = Category(name=category)
+        try:
+            data = category_schema.load(data=json_data)
+        except ValidationError as err:
+            return {
+                'message': 'Validation errors',
+                'errors': err.messages
+            }, HTTPStatus.BAD_REQUEST
+
+        category = Category(**data)
         category.save()
 
-        return {
-            'id': category.id,
-            'name': category.name
-        }, HTTPStatus.CREATED
+        return category_schema.dump(Category), HTTPStatus.CREATED
          
 
 class CategoryResource(Resource):
