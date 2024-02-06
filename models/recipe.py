@@ -30,7 +30,7 @@ class Category(db.Model):
         db.session.commit()
 
     def delete(self):
-        db.session.dele(self)
+        db.session.delete(self)
         db.session.commit()
 
 class Recipe(db.Model):
