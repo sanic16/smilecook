@@ -37,7 +37,7 @@ class CategoryListResource(Resource):
         category = Category(**data)
         category.save()
 
-        return category_schema.dump(Category), HTTPStatus.CREATED
+        return category_schema.dump(category), HTTPStatus.CREATED
          
 
 class CategoryResource(Resource):
