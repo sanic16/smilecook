@@ -1,6 +1,34 @@
 from extensions import db
 from sqlalchemy import asc, desc
 
+recipe_category_association = db.Table(
+    'recipe_category_association',
+    db.Column('recipe_id', db.Integer, db.ForeignKey('recipe.id')),
+    db.Column('category_id', db.Integer, db.ForeignKey('category.id'))
+) 
+
+class Category(db.Model):
+    __tablename__ = 'category'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False, unique=True)
+    recipes = db.relationship('Recipe', secondary=recipe_category_association, backref='categories')
+
+    @classmethod
+    def get_all_categories(cls):
+        return cls.query.all()
+    
+    @classmethod
+    def get_by_id(cls, category_id):
+        return cls.query.filter_by(id=category_id).first()
+    
+    @classmethod
+    def get_by_name(cls, name):
+        return cls.query.filter_by(name=name).first()
+    
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+
 class Recipe(db.Model):
     __tablename__ = 'recipe'
     id = db.Column(db.Integer, primary_key=True)
