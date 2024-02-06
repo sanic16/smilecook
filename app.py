@@ -8,7 +8,7 @@ from resources.recipe import RecipeListResource, RecipeResource, RecipePublishRe
 from resources.user import (UserListResource, UserResource, MeResource, UserRecipeListResource,
                              UserActivateResource, UserAvatarUploadResource) 
 from resources.token import TokenResource, RefreshResource, RevokeResource, TokenMobileResource, RefreshMobileResource
-from resources.category import CategoryListResource, CategoryResource  
+from resources.category import CategoryListResource, CategoryResource, CategoryRecipeListResource  
 from models.token import TokenBlocklist
 
 
@@ -54,6 +54,7 @@ def register_resources(app):
 
     api.add_resource(CategoryListResource, '/api/categories')
     api.add_resource(CategoryResource, '/api/categories/<int:category_id>')
+    api.add_resource(CategoryRecipeListResource, '/api/categories/<int:category_id>/recipes')
 
     api.add_resource(TokenResource, '/api/token')
     api.add_resource(RefreshResource, '/api/refresh')

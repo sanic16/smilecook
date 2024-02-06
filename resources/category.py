@@ -5,10 +5,12 @@ from models.recipe import Category
 from flask_jwt_extended import get_jwt_identity, jwt_required
 from decorators import admin_required
 from schemas.category import CategorySchema
+from schemas.recipe import RecipeSchema
 from marshmallow import ValidationError
 
 category_schema = CategorySchema()
 category_list_schema = CategorySchema(many=True)
+recipe_list_schema = RecipeSchema(many=True)
 
 class CategoryListResource(Resource):
     def get(self):
@@ -84,4 +86,17 @@ class CategoryResource(Resource):
         category.save()
 
         return category_schema.dump(category), HTTPStatus.OK
+    
+
+class CategoryRecipeListResource(Resource):
+    def get(self, category_id):
+        category = Category.get_by_id(category_id=category_id)
+
+        if category is None:
+            return {'message': 'Category not found'}, HTTPStatus.NOT_FOUND
+        
+
+        return recipe_list_schema.dump(category.recipes), HTTPStatus.OK
+        
+
         
