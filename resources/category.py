@@ -31,6 +31,9 @@ class CategoryListResource(Resource):
                 'errors': err.messages
             }, HTTPStatus.BAD_REQUEST
 
+        if Category.get_by_name(data.get('name')):
+            return {'message': 'Category already exists'}, HTTPStatus.BAD_REQUEST
+
         category = Category(**data)
         category.save()
 
