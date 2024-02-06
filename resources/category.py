@@ -16,7 +16,7 @@ class CategoryListResource(Resource):
     def get(self):
         categories = Category.get_all_categories()
         
-        return category_list_schema.dump(categories), HTTPStatus.OK
+        return category_list_schema.dump(categories, exclude=('recipes',)), HTTPStatus.OK
 
 
 
