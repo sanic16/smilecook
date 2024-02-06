@@ -29,6 +29,10 @@ class Category(db.Model):
         db.session.add(self)
         db.session.commit()
 
+    def delete(self):
+        db.session.dele(self)
+        db.session.commit()
+
 class Recipe(db.Model):
     __tablename__ = 'recipe'
     id = db.Column(db.Integer, primary_key=True)

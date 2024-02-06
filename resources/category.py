@@ -47,3 +47,15 @@ class CategoryResource(Resource):
             'id': category.id,
             'name': category.name
         }, HTTPStatus.OK
+    
+    @jwt_required()
+    @admin_required
+    def delete(self, category_id):
+        category = Category.get_by_id(category_id=category_id)
+
+        if category is None:
+            return {'message': 'Category not found'}, HTTPStatus.NOT_FOUND
+
+        category.delete()
+
+        return {}, HTTPStatus.NO_CONTENT
