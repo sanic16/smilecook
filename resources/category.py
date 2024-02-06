@@ -11,12 +11,13 @@ from marshmallow import ValidationError
 category_schema = CategorySchema()
 category_list_schema = CategorySchema(many=True)
 recipe_list_schema = RecipeSchema(many=True)
+category_list_schema_only = CategorySchema(many=True, only=('id', 'name'))
 
 class CategoryListResource(Resource):
     def get(self):
         categories = Category.get_all_categories()
         
-        return category_list_schema.dump(categories, exclude=('recipes',)), HTTPStatus.OK
+        return category_list_schema_only.dump(categories), HTTPStatus.OK
 
 
 
