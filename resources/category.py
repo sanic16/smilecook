@@ -35,3 +35,15 @@ class CategoryListResource(Resource):
             'name': category.name
         }, HTTPStatus.CREATED
          
+
+class CategoryResource(Resource):
+    def get(self, category_id):
+        category = Category.get_by_id(category_id=category_id)
+
+        if category is None:
+            return {'message': 'Category not found'}, HTTPStatus.NOT_FOUND
+        
+        return {
+            'id': category.id,
+            'name': category.name
+        }, HTTPStatus.OK

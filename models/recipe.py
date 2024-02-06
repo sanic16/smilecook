@@ -15,7 +15,7 @@ class Category(db.Model):
 
     @classmethod
     def get_all_categories(cls):
-        return cls.query.all()
+        return cls.query.order_by(asc(cls.id)).all()
     
     @classmethod
     def get_by_id(cls, category_id):
